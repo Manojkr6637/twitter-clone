@@ -9,6 +9,11 @@ import {FaRegUserCircle} from "react-icons/fa"
 import {IoBookmarksOutline} from "react-icons/io5"
 import FeedCard from "@/components/FeedCard";
 
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
+import { useCallback } from "react";
+import toast from "react-hot-toast";
+import { graphqlClient } from "../../clients/api";
+import { verifyUserGoogleTokenQuery } from "../../graphql/query/user";
 
 interface TwitterSidebarButton {
   title: string,
@@ -42,6 +47,19 @@ const sidebarMenuItems: TwitterSidebarButton[] = [
 ];
 
 export default function Home() { 
+
+  const handleLoginWithGoogle = useCallback(
+    async (cred: CredentialResponse)=>{
+    const googleToken=cred.credential;
+    console.log('login', googleToken)
+    if(!googleToken) return toast.error("Google token is required");
+     
+    // const {verifyGoogleToken} = await graphqlClient.request(verifyUserGoogleTokenQuery, {token:googleToken});
+     toast.success('Verfied Success')
+    //  if(verifyGoogleToken)
+    //  {localStorage.setItem('_twitter_token',verifyGoogleToken)}
+  
+  },[])
   
   return (
     <div >
@@ -79,7 +97,12 @@ export default function Home() {
           <FeedCard/>
           <FeedCard/>
            </div>
-        <div className="col-span-3"> </div>
+          <div className="col-span-3 p-2">
+            <div className="bg-slate-600 rounded-lg p-2 ">
+            <h1 className="my-2 text-lg text-white">New to Twitter?</h1>
+            <GoogleLogin   onSuccess={handleLoginWithGoogle}  onError={() => { console.log('Login Failed'); }}/>;
+            </div>
+           </div>
       </div>
     </div>
 
